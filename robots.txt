@@ -1,0 +1,11 @@
+# Pages are open to search engines. Image crawlers are blocked until the kids' photo releases are signed.
+User-agent: *
+Allow: /
+
+User-agent: Googlebot-Image
+Disallow: /
+
+User-agent: msnbot-media
+Disallow: /
+
+Sitemap: https://g-forcemma.com/sitemap.xml
