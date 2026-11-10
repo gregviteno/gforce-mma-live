@@ -99,7 +99,6 @@
         "Who's training: " + who, 'Program: ' + data.program_name];
       if (data.child_age) lines.push("Child's age: " + data.child_age);
       if (data.slot) lines.push('Class time: ' + data.slot);
-      lines.push('OK to text me: ' + (data.sms_consent ? 'Yes' : 'No'));
       track('generate_lead', { program: data.program || 'not_sure', who: data.who || '', method: 'email' });
       location.href = 'mailto:' + CFG.mailto + '?subject=' + encodeURIComponent('Free class request: ' + (data.name || '')) + '&body=' + encodeURIComponent(lines.join('\n'));
       msg.textContent = 'Your email app should open with your details filled in. Press send and we will get back to you to confirm your class. If nothing opens, email us at ' + CFG.mailto + '.';
