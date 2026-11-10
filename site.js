@@ -7,9 +7,20 @@
     t.textContent=on?'Show draft notes':'Hide draft notes';
     t.setAttribute('aria-pressed',on?'true':'false');
   });
-  /* Mobile menu */
+  /* Full-screen menu */
   var mb=document.getElementById('menuBtn'), nv=document.getElementById('mainnav');
-  if(mb)mb.addEventListener('click',function(){var o=nv.classList.toggle('open');mb.setAttribute('aria-expanded',o?'true':'false');});
+  function setMenu(o){
+    if(o){var hb=document.querySelector('.hdr>.wrap').getBoundingClientRect().bottom;nv.style.paddingTop=Math.round(hb+36)+'px';}
+    root.classList.toggle('menu-open',o);nv.classList.toggle('open',o);
+    mb.setAttribute('aria-expanded',o?'true':'false');
+    mb.querySelector('.mb-t').textContent=o?'Close':'Menu';
+    if(o){var f=nv.querySelector('a');if(f)f.focus({preventScroll:true});}
+  }
+  if(mb&&nv){
+    mb.addEventListener('click',function(){setMenu(!nv.classList.contains('open'));});
+    nv.addEventListener('click',function(e){if(e.target.closest('a'))setMenu(false);});
+    document.addEventListener('keydown',function(e){if(e.key==='Escape'&&nv.classList.contains('open')){setMenu(false);mb.focus();}});
+  }
   /* Programs dropdown */
   document.querySelectorAll('.dd').forEach(function(dd){
     var b=dd.querySelector('.dd-btn');
@@ -66,5 +77,26 @@
     var list=S.filter(function(c){return c.program===id;}).sort(function(a,b){return DAYS.findIndex(function(d){return d[0]===a.day;})-DAYS.findIndex(function(d){return d[0]===b.day;})||mins(a.start)-mins(b.start);});
     el.innerHTML=(window.GF_SCHEDULE_IS_SAMPLE?'<p class="sample-note"><b>Sample times.</b> Real schedule coming from G-Force.</p>':'')+
       (list.length?'<ul class="mini">'+list.map(function(c){var dn=DAYS.filter(function(d){return d[0]===c.day;})[0];return '<li><b>'+(dn?dn[1]:c.day)+'</b><span>'+esc(c.start)+' – '+esc(c.end)+(c.note?' · '+esc(c.note):'')+'</span></li>';}).join('')+'</ul>':'<p>We\'re updating class times. Email <a href="mailto:gforcemmafitness@gmail.com">gforcemmafitness@gmail.com</a> and we\'ll find a time that fits.</p>');
+  });
+})();
+
+/* Coach profile pop-ups */
+(function(){
+  var root=document.documentElement;
+  document.querySelectorAll('.coach-open').forEach(function(b){
+    b.addEventListener('click',function(){
+      var d=document.getElementById('coach-'+b.getAttribute('data-coach'));
+      if(!d||typeof d.showModal!=='function')return;
+      d._opener=b;root.classList.add('dlg-open');d.showModal();
+      var body=d.querySelector('.dlg-body, .dlg-grid');if(body)body.scrollTop=0;
+    });
+  });
+  document.querySelectorAll('.coach-dlg').forEach(function(d){
+    d.addEventListener('close',function(){root.classList.remove('dlg-open');if(d._opener)d._opener.focus({preventScroll:true});});
+    d.addEventListener('click',function(e){
+      if(e.target===d||e.target.closest('.dlg-x')){d.close();return;}
+      var a=e.target.closest('a');
+      if(a&&(a.getAttribute('href')||'').charAt(0)==='#'){root.classList.remove('dlg-open');d._opener=null;d.close();}
+    });
   });
 })();
